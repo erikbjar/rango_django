@@ -13,8 +13,15 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+# os.path.join function joins BASE_DIR path and templates the rigth way with forward slashes.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
+
+STATIC_PATH = os.path.join(BASE_DIR,'static')
+
+# In production environment this needs to be changed
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -29,7 +36,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-# 
+#
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,10 +60,15 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'rango_django_project.urls'
 
+TEMPLATE_DIRS = (
+    # Don't forget to use abs paths, not relative ones
+    TEMPLATE_PATH,
+)
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_PATH], # Updated in version 1.8
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -100,4 +112,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
+STATICFILES_DIRS = (
+    STATIC_PATH,
+)
+
 STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'

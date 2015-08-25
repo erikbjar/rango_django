@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect,HttpResponse
 from rango.models import Category,Page
-from rango.forms import CategoryForm, UserProfileForm, UserForm
+from rango.forms import PageForm,CategoryForm, UserProfileForm, UserForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, authenticate,login
 from datetime import datetime
@@ -13,7 +13,7 @@ def index(request):
     category_list = Category.objects.order_by('-likes')[:5]
     page_list = Page.objects.order_by('-views')[:5]
 
-    context_dict = {'categories': category_list, 'pages': page_list}
+    context_dict = {'top_categories': category_list, 'top_pages': page_list}
 
     visits = request.session.get('visits')
     if not visits:
@@ -52,7 +52,7 @@ def about(request):
     else:
         count = 0
 
-    context_dict = {'boldmessage': "I like pizza and juice",'visits': count}
+    context_dict = {'boldmessage': "Enjoy!",'visits': count,'Cite': 'Picture from www.Pixabay.com'}
 
     # remember to include the visit data
     return render(request, 'rango/about.html',context_dict)
@@ -110,7 +110,30 @@ def add_category(request):
     # Render the form with error messages (if any).
     return render(request, 'rango/add_category.html', {'form': form})
 
+@login_required
+def add_page(request):
+    # A HTTP POST?
+    if request.method == 'POST':
+        form = PageForm(request.POST)
 
+        # Have we been provided with a valid form?
+        if form.is_valid():
+            # Save the new category to the database.
+            form.save(commit=True)
+
+            # Now call the index() view.
+            # The user will be shown the homepage.
+            return index(request)
+        else:
+            # The supplied form contained errors - just print them to the terminal.
+            print form.errors
+    else:
+        # If the request was not a POST, display the form to enter details.
+        form = PageForm()
+
+    # Bad form (or form details), no form supplied...
+    # Render the form with error messages (if any).
+    return render(request, 'rango/add_page.html', {'form': form})
 
 # stuff before using auth through redux
 # def register(request):
